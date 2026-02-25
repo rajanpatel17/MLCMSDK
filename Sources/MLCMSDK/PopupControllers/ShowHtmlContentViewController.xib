@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ShowHtmlContentViewController" customModule="MLCM" customModuleProvider="target">
+            <connections>
+                <outlet property="closeButton" destination="bod-IS-w7R" id="Ryy-1S-yo1"/>
+                <outlet property="containerView" destination="VnZ-VM-qyg" id="r78-FA-ND0"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+                <outlet property="webView" destination="EOS-Cv-9L3" id="QsO-uf-4u7"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VnZ-VM-qyg">
+                    <rect key="frame" x="39.333333333333343" y="135" width="314.33333333333326" height="582"/>
+                    <subviews>
+                        <wkWebView clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EOS-Cv-9L3">
+                            <rect key="frame" x="0.0" y="0.0" width="314.33333333333331" height="582"/>
+                            <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <wkWebViewConfiguration key="configuration">
+                                <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
+                                <wkPreferences key="preferences"/>
+                            </wkWebViewConfiguration>
+                        </wkWebView>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bod-IS-w7R">
+                            <rect key="frame" x="259.33333333333337" y="15" width="40" height="40"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="40" id="MyF-dB-Ieo"/>
+                                <constraint firstAttribute="width" constant="40" id="ofH-1l-lNe"/>
+                            </constraints>
+                            <inset key="contentEdgeInsets" minX="5" minY="5" maxX="5" maxY="5"/>
+                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                            <state key="normal" image="mlcmFilledCloseButton"/>
+                            <connections>
+                                <action selector="closeButtonAction:" destination="-1" eventType="touchUpInside" id="CmT-VK-yNp"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstAttribute="trailing" secondItem="EOS-Cv-9L3" secondAttribute="trailing" id="1d1-1L-XNg"/>
+                        <constraint firstAttribute="width" secondItem="VnZ-VM-qyg" secondAttribute="height" multiplier="0.54:1" id="Foo-TV-raB"/>
+                        <constraint firstItem="bod-IS-w7R" firstAttribute="top" secondItem="VnZ-VM-qyg" secondAttribute="top" constant="15" id="Xvz-jm-g6Z"/>
+                        <constraint firstItem="EOS-Cv-9L3" firstAttribute="top" secondItem="VnZ-VM-qyg" secondAttribute="top" id="cgo-JK-TUN"/>
+                        <constraint firstItem="EOS-Cv-9L3" firstAttribute="leading" secondItem="VnZ-VM-qyg" secondAttribute="leading" id="oYK-dJ-jFJ"/>
+                        <constraint firstAttribute="trailing" secondItem="bod-IS-w7R" secondAttribute="trailing" constant="15" id="rNC-wP-jmh"/>
+                        <constraint firstAttribute="bottom" secondItem="EOS-Cv-9L3" secondAttribute="bottom" id="scZ-dJ-T1S"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
+            <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.25" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="VnZ-VM-qyg" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="PFs-x9-qrd"/>
+                <constraint firstItem="VnZ-VM-qyg" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="Udn-h1-ZOh"/>
+                <constraint firstItem="VnZ-VM-qyg" firstAttribute="width" secondItem="fnl-2z-Ty3" secondAttribute="width" multiplier="0.8" id="zlJ-nI-4oe"/>
+            </constraints>
+            <point key="canvasLocation" x="94" y="21"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="mlcmFilledCloseButton" width="40" height="40"/>
+    </resources>
+</document>
