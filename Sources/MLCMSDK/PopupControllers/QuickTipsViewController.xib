@@ -14,7 +14,7 @@
         </array>
     </customFonts>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="QuickTipsViewController" customModule="MLCM" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="QuickTipsViewController" customModule="MLCMSDK" customModuleProvider="target">
             <connections>
                 <outlet property="TopContainerView" destination="Sgf-wy-VaL" id="jXd-bm-Ky0"/>
                 <outlet property="closeButton" destination="oDv-gB-wXh" id="3eK-dq-O5Q"/>

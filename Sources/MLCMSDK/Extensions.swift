@@ -10,7 +10,17 @@ public protocol XIBed {
 
 public extension XIBed where Self: UIViewController {
     static func instantiate() -> Self {
-        return Self(nibName: String(describing: self), bundle: Bundle(for: Self.self))
+        return Self(nibName: String(describing: self), bundle: .sdkBundle)
+    }
+}
+
+extension Bundle {
+    static var sdkBundle: Bundle {
+        #if SWIFT_PACKAGE
+        return Bundle.module
+        #else
+        return Bundle(for: MLCMSDK.self)
+        #endif
     }
 }
 

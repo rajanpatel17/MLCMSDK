@@ -154,14 +154,14 @@ class FloatingView: UIView {
         
         // Close Button
         closeButton = UIButton(type: .custom)
-        closeButton.setImage(UIImage(named: "mlcmFilledCloseButton", in: Bundle(for: Self.self), compatibleWith: nil), for: .normal)
+        closeButton.setImage(UIImage(named: "mlcmFilledCloseButton", in: .sdkBundle, compatibleWith: nil), for: .normal)
         closeButton.contentEdgeInsets = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
         closeButton.addTarget(self, action: #selector(closeButtonTapped), for: .touchUpInside)
         addSubview(closeButton)
         
         // Maximize Button
         maximizeButton = UIButton(type: .custom)
-        maximizeButton.setImage(UIImage(named: "maximise", in: Bundle(for: Self.self), compatibleWith: nil), for: .normal)
+        maximizeButton.setImage(UIImage(named: "maximise", in: .sdkBundle, compatibleWith: nil), for: .normal)
         maximizeButton.contentEdgeInsets = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
         maximizeButton.addTarget(self, action: #selector(maximizeButtonTapped), for: .touchUpInside)
         addSubview(maximizeButton)

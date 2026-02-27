@@ -17,7 +17,7 @@
         </array>
     </customFonts>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="BottomDetailsPopupViewController" customModule="MLCM" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="BottomDetailsPopupViewController" customModule="MLCMSDK" customModuleProvider="target">
             <connections>
                 <outlet property="bottomButtonStackView" destination="CLd-Vx-O1X" id="FRy-1H-Weu"/>
                 <outlet property="bottomConstraint" destination="zYB-pn-SER" id="wHK-6I-1zZ"/>

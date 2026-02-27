@@ -8,7 +8,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ShowHtmlContentViewController" customModule="MLCM" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ShowHtmlContentViewController" customModule="MLCMSDK" customModuleProvider="target">
             <connections>
                 <outlet property="closeButton" destination="bod-IS-w7R" id="Ryy-1S-yo1"/>
                 <outlet property="containerView" destination="VnZ-VM-qyg" id="r78-FA-ND0"/>

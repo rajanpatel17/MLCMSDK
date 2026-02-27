@@ -9,7 +9,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SingleCenterInfoViewController" customModule="MLCM" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="SingleCenterInfoViewController" customModule="MLCMSDK" customModuleProvider="target">
             <connections>
                 <outlet property="LogoImageView" destination="80u-CU-jbZ" id="MGd-5z-GDE"/>
                 <outlet property="bottomButtonStackView" destination="eDb-uM-hvZ" id="M0U-mC-Bca"/>
