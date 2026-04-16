@@ -1,5 +1,10 @@
+//
 //  SingleImagePopupViewController.swift
 //  MLCM
+//
+//  Created by Sagar Upadhyay on 17/07/23.
+//  Copyright © 2023 Chaitanya Soni. All rights reserved.
+//
 
 import UIKit
 import AVFoundation
@@ -8,12 +13,13 @@ import SDWebImage
 
 class SingleImagePopupViewController: UIViewController, XIBed {
     
-    static func instantiate(imageURL: String, imageCTA: String, contentType: String, forceDismiss: Bool) -> Self {
+    static func instantiate(imageURL: String, imageCTA: String, contentType: String, forceDismiss: Bool, isCrossIcon: Bool) -> Self {
         let vc = Self.instantiate()
         vc.imageURL = imageURL
         vc.imageCTA = imageCTA
         vc.contentType = contentType
         vc.forceDismiss = forceDismiss
+        vc.isCrossIcon = isCrossIcon
         return vc
     }
     
@@ -21,6 +27,7 @@ class SingleImagePopupViewController: UIViewController, XIBed {
     var imageCTA: String?
     var contentType: String?
     var forceDismiss: Bool?
+    var isCrossIcon: Bool?
     var player: AVPlayer!
     var playerViewController = AVPlayerViewController()
     var imageCompletion: (() -> ())? = nil
@@ -29,6 +36,7 @@ class SingleImagePopupViewController: UIViewController, XIBed {
     @IBOutlet weak var videoContainer: UIView!
     @IBOutlet weak var containerView: UIView!
     @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var btnClose: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -48,7 +56,9 @@ extension SingleImagePopupViewController{
         containerView.layer.cornerRadius = 20
         imageView.layer.cornerRadius = 20
         videoContainer.layer.cornerRadius = 20
-//        imageView.moa.url = imageURL
+        // imageView.moa.url = imageURL
+        
+        btnClose.isHidden = !(isCrossIcon ?? false)
         
         imageView.isUserInteractionEnabled = true
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped))
@@ -64,9 +74,9 @@ extension SingleImagePopupViewController{
             videoContainer.isHidden = true
             imageView.isHidden = false
             if contentType?.lowercased() == "gif"{
-//                UIImage.gifImageWithURL(imageURL ?? "") {  image in
-//                    self.imageView.image = image
-//                }
+                // UIImage.gifImageWithURL(imageURL ?? "") {  image in
+                // self.imageView.image = image
+                // }
                 DispatchQueue.main.async {
                     if let gifUrl = URL(string: self.imageURL ?? "") {
                         self.imageView.sd_setImage(with: gifUrl) { (image, error, cacheType, imageURL) in
@@ -112,7 +122,7 @@ extension SingleImagePopupViewController{
     
     func playVideoFromURL(url: URL, view: UIView) {
         player = AVPlayer(url: url)
-
+        
         playerViewController.player = player
         playerViewController.view.frame.size.height = view.frame.size.height
         playerViewController.view.frame.size.width = view.frame.size.width

@@ -73,9 +73,9 @@ public class MLCMSDK {
         return vc
     }
     
-    public class func getSingleImagePopupViewController(imageURL: String, imageCTA: String, contentType: String, forceDismiss: String, cancelCompletion: (@escaping (() -> Void)), imageCompletion: (@escaping (() -> Void))) -> UIViewController {
+    public class func getSingleImagePopupViewController(imageURL: String, imageCTA: String, contentType: String, forceDismiss: String, isCrossIcon: String, cancelCompletion: (@escaping (() -> Void)), imageCompletion: (@escaping (() -> Void))) -> UIViewController {
         
-        let vc = SingleImagePopupViewController.instantiate(imageURL: imageURL, imageCTA: imageCTA, contentType: contentType, forceDismiss: forceDismiss.lowercased() == "true")
+        let vc = SingleImagePopupViewController.instantiate(imageURL: imageURL, imageCTA: imageCTA, contentType: contentType, forceDismiss: forceDismiss.lowercased() == "true", isCrossIcon: isCrossIcon.lowercased() == "true")
         
         vc.cancelCompletion = {
             cancelCompletion()
