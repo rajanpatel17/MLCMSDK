@@ -202,7 +202,11 @@ extension BottomDetailsPopupViewController{
             }else{
                 descLabel.isHidden = true
             }
-        }else{
+        } else if imageURL != "" {
+            textViewContainer.isHidden = false
+            titleLabel.isHidden = true
+            descLabel.isHidden = true
+        } else {
             textViewContainer.isHidden = true
         }
         
