@@ -6,7 +6,7 @@ import AVFoundation
 import AVKit
 import SDWebImage
 
-class BottomDetailsPopupViewController: UIViewController, XIBed {
+class BottomDetailsPopupViewController: UIViewController, MLCMXIBed {
     
     static func instantiate(imageURL: String, imageCTA: String, text1: String, text1color: String, text2: String, text2color: String, btnCTAText1: String, btnCTAText2: String, btnBGColor1: String, btnBGColor2: String, contentType: String, forceDismiss: Bool, btnCTATextColor1: String, btnCTATextColor2: String, isCrossIcon: Bool) -> Self {
         let vc = Self.instantiate()

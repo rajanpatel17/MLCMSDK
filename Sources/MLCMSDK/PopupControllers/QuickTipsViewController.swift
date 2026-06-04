@@ -3,7 +3,7 @@
 
 import UIKit
 
-class QuickTipsViewController: UIViewController, XIBed {
+class QuickTipsViewController: UIViewController, MLCMXIBed {
     
     static func instantiate(list: [(text1: String, text1Color: String, text2: String, text2Color: String)], headertitletext: String, headerbgcolor: String, headerpagination: Bool, forceDismiss: Bool, btnCTAText1: String, btnCTAText2: String, btnCTATextColor1: String, btnCTATextColor2: String) -> Self {
         let vc = Self.instantiate()

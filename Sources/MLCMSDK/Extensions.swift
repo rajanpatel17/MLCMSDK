@@ -4,11 +4,11 @@
 import Foundation
 import UIKit
 
-public protocol XIBed {
+public protocol MLCMXIBed {
     static func instantiate() -> Self
 }
 
-public extension XIBed where Self: UIViewController {
+public extension MLCMXIBed where Self: UIViewController {
     static func instantiate() -> Self {
         return Self(nibName: String(describing: self), bundle: .sdkBundle)
     }

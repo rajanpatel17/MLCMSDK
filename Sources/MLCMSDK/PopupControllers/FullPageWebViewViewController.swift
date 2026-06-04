@@ -4,7 +4,7 @@
 import UIKit
 @preconcurrency import WebKit
 
-class FullPageWebViewViewController: UIViewController, XIBed, WKNavigationDelegate {
+class FullPageWebViewViewController: UIViewController, MLCMXIBed, WKNavigationDelegate {
     static func instantiate(htmlContent: String, webURL: String) -> Self {
         let vc = Self.instantiate()
         vc.htmlContent = htmlContent

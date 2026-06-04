@@ -6,7 +6,7 @@ import AVFoundation
 import AVKit
 import SDWebImage
 
-class SingleCenterInfoViewController: UIViewController, XIBed {
+class SingleCenterInfoViewController: UIViewController, MLCMXIBed {
     
     static func instantiate(imageURL: String, imageCTA: String, btnCTA1: String, btnCTA2: String, btnCTAText1: String, btnCTAText2: String, btnBGColor1: String, btnBGColor2: String, text1: String, text1Color: String, text2: String, text2color: String, contentType: String, isShowButtonIcons: Bool, forceDismiss: Bool, btnCTATextColor1: String, btnCTATextColor2: String, isCrossIcon: Bool) -> Self {
         let vc = Self.instantiate()

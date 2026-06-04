@@ -11,7 +11,7 @@ import AVFoundation
 import AVKit
 import SDWebImage
 
-class SingleImagePopupViewController: UIViewController, XIBed {
+class SingleImagePopupViewController: UIViewController, MLCMXIBed {
     
     static func instantiate(imageURL: String, imageCTA: String, contentType: String, forceDismiss: Bool, isCrossIcon: Bool) -> Self {
         let vc = Self.instantiate()

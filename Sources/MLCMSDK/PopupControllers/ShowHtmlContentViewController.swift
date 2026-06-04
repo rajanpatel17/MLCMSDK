@@ -5,7 +5,7 @@
 import UIKit
 import WebKit
 
-class ShowHtmlContentViewController: UIViewController, XIBed {
+class ShowHtmlContentViewController: UIViewController, MLCMXIBed {
     
     static func instantiate(htmlContent: String, contentType: String, forceDismiss: Bool) -> Self {
         let vc = Self.instantiate()
