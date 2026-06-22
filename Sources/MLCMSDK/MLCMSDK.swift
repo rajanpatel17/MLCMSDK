@@ -52,7 +52,7 @@ public class MLCMSDK {
     
     public class func getBottomDetailsPopupViewController(imageURL: String, imageCTA: String, text1: String, text1color: String, text2: String, text2color: String, btnCTAText1: String, btnCTAText2: String, btnBGColor1: String, btnBGColor2: String, contentType: String, forceDismiss: String, btnCTATextColor1: String, btnCTATextColor2: String, isCrossIcon: String, btn1CtaCompletion: (@escaping (() -> Void)), btn2CtaCompletion: (@escaping (() -> Void)), cancelCompletion: (@escaping (() -> Void)), imageCompletion: (@escaping (() -> Void))) -> UIViewController {
         
-        let vc = BottomDetailsPopupViewController.instantiate(imageURL: imageURL, imageCTA: imageCTA, text1: text1, text1color: text1color, text2: text2, text2color: text2color, btnCTAText1: btnCTAText1, btnCTAText2: btnCTAText2, btnBGColor1: btnBGColor1, btnBGColor2: btnBGColor2, contentType: contentType, forceDismiss: forceDismiss.lowercased() == "true", btnCTATextColor1: btnCTATextColor1, btnCTATextColor2: btnCTATextColor2, isCrossIcon: true)
+        let vc = BottomDetailsPopupViewController.instantiate(imageURL: imageURL, imageCTA: imageCTA, text1: text1, text1color: text1color, text2: text2, text2color: text2color, btnCTAText1: btnCTAText1, btnCTAText2: btnCTAText2, btnBGColor1: btnBGColor1, btnBGColor2: btnBGColor2, contentType: contentType, forceDismiss: forceDismiss.lowercased() == "true", btnCTATextColor1: btnCTATextColor1, btnCTATextColor2: btnCTATextColor2, isCrossIcon: isCrossIcon.lowercased() == "true")
         
         vc.btn1CtaCompletion = {
             btn1CtaCompletion()
