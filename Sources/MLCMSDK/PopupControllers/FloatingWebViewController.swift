@@ -31,15 +31,25 @@ class FloatingWebViewController{
         }
         floatingView.dismissCompletion = { self.dismissCompletion?() }
         
+        let isVideo = isVideoURL(webURL)
+        
         // Add WKWebView
         if htmlContent != "" {
             floatingView.webView.loadHTMLString(htmlContent, baseURL: nil)
             fullScreenPopup = FullPageWebViewViewController.instantiate(htmlContent: htmlContent, webURL: "")
             fullScreenPopup?.delegate = self
         }else if webURL != "", let url = URL(string: webURL){
-            floatingView.webView.load(URLRequest(url: url))
-            fullScreenPopup = FullPageWebViewViewController.instantiate(htmlContent: "", webURL: webURL)
-            fullScreenPopup?.delegate = self
+            if isVideo {
+                let smallHTML = getVideoHTML(for: webURL, showControls: false)
+                let fullHTML = getVideoHTML(for: webURL, showControls: true)
+                floatingView.webView.loadHTMLString(smallHTML, baseURL: nil)
+                fullScreenPopup = FullPageWebViewViewController.instantiate(htmlContent: fullHTML, webURL: "")
+                fullScreenPopup?.delegate = self
+            } else {
+                floatingView.webView.load(URLRequest(url: url))
+                fullScreenPopup = FullPageWebViewViewController.instantiate(htmlContent: "", webURL: webURL)
+                fullScreenPopup?.delegate = self
+            }
         }
         
         
@@ -73,6 +83,46 @@ class FloatingWebViewController{
         recognizer.setTranslation(CGPoint.zero, in: topView.view)
     }
     
+    private func isVideoURL(_ urlString: String) -> Bool {
+        guard let url = URL(string: urlString) else { return false }
+        let videoExtensions = ["mp4", "mov", "m4v", "3gp", "avi", "mkv", "webm"]
+        return videoExtensions.contains(url.pathExtension.lowercased())
+    }
+    
+    private func getVideoHTML(for videoURL: String, showControls: Bool) -> String {
+        let controlsAttr = showControls ? "controls" : ""
+        return """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+            <style>
+                body, html {
+                    margin: 0;
+                    padding: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: black;
+                    overflow: hidden;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+                video {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                }
+            </style>
+        </head>
+        <body>
+            <video id="videoPlayer" playsinline autoplay muted loop \(controlsAttr) src="\(videoURL)">
+                Your browser does not support the video tag.
+            </video>
+        </body>
+        </html>
+        """
+    }
 }
 
 extension FloatingWebViewController: FullScreenPopupDelegate {
@@ -154,14 +204,14 @@ class FloatingView: UIView {
         
         // Close Button
         closeButton = UIButton(type: .custom)
-        closeButton.setImage(UIImage(named: "mlcmFilledCloseButton", in: .sdkBundle, compatibleWith: nil), for: .normal)
+        closeButton.setImage(UIImage(named: "mlcmFilledCloseButton", in: Bundle(for: Self.self), compatibleWith: nil), for: .normal)
         closeButton.contentEdgeInsets = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
         closeButton.addTarget(self, action: #selector(closeButtonTapped), for: .touchUpInside)
         addSubview(closeButton)
         
         // Maximize Button
         maximizeButton = UIButton(type: .custom)
-        maximizeButton.setImage(UIImage(named: "maximise", in: .sdkBundle, compatibleWith: nil), for: .normal)
+        maximizeButton.setImage(UIImage(named: "maximise", in: Bundle(for: Self.self), compatibleWith: nil), for: .normal)
         maximizeButton.contentEdgeInsets = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
         maximizeButton.addTarget(self, action: #selector(maximizeButtonTapped), for: .touchUpInside)
         addSubview(maximizeButton)
