@@ -29,6 +29,9 @@ class FloatingWebViewController{
         floatingView.eventCompletion = { obj in
             self.eventCompletion?(obj)
         }
+        floatingView.deeplinkCompletion = { str in
+            self.completion?(str)
+        }
         floatingView.dismissCompletion = { self.dismissCompletion?() }
         
         let isVideo = isVideoURL(webURL)
@@ -36,6 +39,9 @@ class FloatingWebViewController{
         // Add WKWebView
         if htmlContent != "" {
             floatingView.webView.loadHTMLString(htmlContent, baseURL: nil)
+            floatingView.closeButton.isHidden = false
+            floatingView.maximizeButton.isHidden = false
+            floatingView.webView.isUserInteractionEnabled = false
             fullScreenPopup = FullPageWebViewViewController.instantiate(htmlContent: htmlContent, webURL: "")
             fullScreenPopup?.delegate = self
         }else if webURL != "", let url = URL(string: webURL){
@@ -46,7 +52,11 @@ class FloatingWebViewController{
                 fullScreenPopup = FullPageWebViewViewController.instantiate(htmlContent: fullHTML, webURL: "")
                 fullScreenPopup?.delegate = self
             } else {
+                floatingView.vcWebURL = webURL
                 floatingView.webView.load(URLRequest(url: url))
+                floatingView.closeButton.isHidden = true
+                floatingView.maximizeButton.isHidden = true
+                floatingView.webView.isUserInteractionEnabled = true
                 fullScreenPopup = FullPageWebViewViewController.instantiate(htmlContent: "", webURL: webURL)
                 fullScreenPopup?.delegate = self
             }
@@ -85,8 +95,17 @@ class FloatingWebViewController{
     
     private func isVideoURL(_ urlString: String) -> Bool {
         guard let url = URL(string: urlString) else { return false }
-        let videoExtensions = ["mp4", "mov", "m4v", "3gp", "avi", "mkv", "webm"]
-        return videoExtensions.contains(url.pathExtension.lowercased())
+        var cleanURL = url
+        if var components = URLComponents(url: url, resolvingAgainstBaseURL: true) {
+            components.query = nil
+            components.fragment = nil
+            if let stripped = components.url {
+                cleanURL = stripped
+            }
+        }
+        let pathExtension = cleanURL.pathExtension.lowercased()
+        let videoExtensions = ["mp4", "mov", "m4v", "3gp", "avi", "mkv", "webm", "m3u8"]
+        return videoExtensions.contains(pathExtension) || urlString.contains(".mp4") || urlString.contains(".m3u8")
     }
     
     private func getVideoHTML(for videoURL: String, showControls: Bool) -> String {
@@ -163,14 +182,16 @@ protocol FullScreenPopupDelegate: AnyObject {
     func maximizeButtonTapped()
 }
 
-class FloatingView: UIView {
+class FloatingView: UIView, WKNavigationDelegate {
     
     weak var delegate: FullScreenPopupDelegate?
     
     var closeButton: UIButton!
     var maximizeButton: UIButton!
     var webView: WKWebView!
+    var vcWebURL: String?
     var eventCompletion: (([String:Any]) -> ())? = nil
+    var deeplinkCompletion: ((String) -> ())? = nil
     var dismissCompletion: (() -> ())? = nil
     
     override init(frame: CGRect) {
@@ -195,12 +216,14 @@ class FloatingView: UIView {
         
         // Web View
         let webConfiguration = WKWebViewConfiguration()
-            webConfiguration.allowsInlineMediaPlayback = true // Enable inline playback
-            webConfiguration.mediaTypesRequiringUserActionForPlayback = [] // Disable user action for playback
-            webView = WKWebView(frame: .zero, configuration: webConfiguration)
-            webView.isUserInteractionEnabled = false // Enable interaction for autoplay
-            
-            addSubview(webView)
+        webConfiguration.allowsInlineMediaPlayback = true // Enable inline playback
+        webConfiguration.mediaTypesRequiringUserActionForPlayback = [] // Disable user action for playback
+        webView = WKWebView(frame: .zero, configuration: webConfiguration)
+        webView.isUserInteractionEnabled = true // Enable interaction for autoplay
+        webView.navigationDelegate = self      // will compile after step 2
+        webView.uiDelegate = self
+        addSubview(webView)
+        
         
         // Close Button
         closeButton = UIButton(type: .custom)
@@ -248,6 +271,21 @@ class FloatingView: UIView {
                 });
             });
 
+            // Global helper to post messages directly to Swift from frontend
+            window.postAppEvent = function(data) {
+                if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.clickListener) {
+                    window.webkit.messageHandlers.clickListener.postMessage(data);
+                }
+            };
+
+            // Custom event listener for APP_EVENT
+            window.addEventListener('APP_EVENT', function(event) {
+                var message = event.detail || event;
+                if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.clickListener) {
+                    window.webkit.messageHandlers.clickListener.postMessage(message);
+                }
+            });
+
             // Override console.log
             window.originalConsoleLog = console.log;
             console.log = function(message) {
@@ -273,35 +311,146 @@ class FloatingView: UIView {
     }
     
     @objc private func closeButtonTapped() {
+        stopAllMediaPlayback()
         dismissCompletion?()
         delegate?.closeButtonTapped()
     }
     
     @objc private func maximizeButtonTapped() {
+        stopAllMediaPlayback()
         delegate?.maximizeButtonTapped()
+    }
+    
+    @objc private func minimizeButtonTapped() {
+        stopAllMediaPlayback()
+        delegate?.minimizeButtonTapped()
+    }
+    
+    deinit {
+        self.webView.configuration.userContentController.removeScriptMessageHandler(forName: "clickListener")
+    }
+    
+    private func stopAllMediaPlayback() {
+        // iOS 15+ native API
+        if #available(iOS 15.0, *) {
+            webView.setAllMediaPlaybackSuspended(true, completionHandler: nil)
+        } else {
+            // Fallback: pause all video/audio elements via JS
+            let js = """
+            (function() {
+                try {
+                    var videos = document.querySelectorAll('video');
+                    for (var i = 0; i < videos.length; i++) {
+                        videos[i].pause();
+                        videos[i].currentTime = 0;
+                    }
+                    var audios = document.querySelectorAll('audio');
+                    for (var j = 0; j < audios.length; j++) {
+                        audios[j].pause();
+                        audios[j].currentTime = 0;
+                    }
+                } catch (e) {
+                    // ignore
+                }
+            })();
+            """
+            webView.evaluateJavaScript(js, completionHandler: nil)
+        }
+    }
+    
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        if navigationAction.navigationType == .other {
+            if let url = navigationAction.request.url, url.scheme != "about" {
+                if vcWebURL == url.absoluteString{
+                    decisionHandler(.allow)
+                    return
+                }else {
+                    print("Clicked URL: \(url.absoluteString)")
+                    self.deeplinkCompletion?(url.absoluteString)
+                    decisionHandler(.cancel)
+                    return
+                }
+            }
+        }
+        
+        decisionHandler(.allow)
     }
 }
 
 extension FloatingView: WKScriptMessageHandler {
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        if message.name == "logHandler", let messageBody = message.body as? String {
-            print("JavaScript logged: \(messageBody)")
-            if let jsonData = messageBody.data(using: .utf8) {
-                do {
-                    if let jsonDictionary = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
-                        print("swift data =====>>> ", jsonDictionary)
-                        if (jsonDictionary["eventName"] ?? "") as? String != ""{
-                            self.eventCompletion?(jsonDictionary)
+        if message.name == "logHandler" {
+            if let bodyDict = message.body as? [String: Any] {
+                handleReceivedEvent(bodyDict)
+            } else if let messageBody = message.body as? String {
+                print("JavaScript logged: \(messageBody)")
+                if let jsonData = messageBody.data(using: .utf8) {
+                    do {
+                        if let jsonDictionary = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
+                            print("swift data =====>>> ", jsonDictionary)
+                            if (jsonDictionary["eventName"] ?? "") as? String != ""{
+                                self.eventCompletion?(jsonDictionary)
+                            }
                         }
+                        if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
+                            handleReceivedEvent(jsonObject)
+                        }
+                    } catch {
+                        print("Failed to parse JSON: \(error.localizedDescription)")
                     }
-                } catch {
-                    print("Failed to parse JSON: \(error.localizedDescription)")
                 }
-            } else {
-                print("Failed to convert string to data.")
+            }
+        } else if message.name == "clickListener" {
+            if let bodyDict = message.body as? [String: Any] {
+                handleReceivedEvent(bodyDict)
+            } else if let bodyString = message.body as? String {
+                print("JavaScript logged: \(bodyString)")
+                if let jsonData = bodyString.data(using: .utf8),
+                   let bodyDict = try? JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
+                    handleReceivedEvent(bodyDict)
+                }
             }
         }
     }
+    
+    private func handleReceivedEvent(_ jsonObject: [String: Any]) {
+        if let type = jsonObject["type"] as? String {
+            switch type {
+            case "APP_ACTION":
+                self.handleAppAction(jsonObject)
+            case "LINK":
+                self.handleLinkAction(jsonObject)
+            case "EVENT":
+                self.handleAppEvents((jsonObject["payload"] as? [String: Any]) ?? [:])
+            default:
+                print("Unhandled action type: \(type)")
+            }
+        }
+    }
+    
+    private func handleAppAction(_ jsonObject: [String: Any]) {
+        if let payload = jsonObject["payload"] as? [String: Any], let value = payload["value"] as? String {
+            if value.caseInsensitiveCompare("cross") == .orderedSame {
+                closeButtonTapped()
+            } else if value.caseInsensitiveCompare("maximize") == .orderedSame {
+                maximizeButtonTapped()
+            } else if value.caseInsensitiveCompare("minimize") == .orderedSame {
+                minimizeButtonTapped()
+            }
+        }
+    }
+    
+    private func handleAppEvents(_ jsonDictionary: [String: Any]) {
+        guard let eventName = jsonDictionary["eventName"] as? String, !eventName.isEmpty else { return }
+        self.eventCompletion?(jsonDictionary)
+    }
+
+    private func handleLinkAction(_ jsonObject: [String: Any]) {
+        if let payload = jsonObject["payload"] as? [String: Any], let value = payload["value"] as? String {
+            self.deeplinkCompletion?(value)
+        }
+    }
+    
 }
 
 extension FloatingView: WKUIDelegate {
