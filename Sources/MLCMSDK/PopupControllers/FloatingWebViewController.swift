@@ -155,6 +155,7 @@ extension FloatingWebViewController: FullScreenPopupDelegate {
         fullScreenPopup.eventCompletion = { obj in
             self.eventCompletion?(obj)
         }
+        stopAllMediaPlayback()
         fullScreenPopup.dismissCompletion = { self.dismissCompletion?() }
         expandCompletion?()
         superVC?.present(fullScreenPopup, animated: true, completion: nil)
@@ -163,6 +164,7 @@ extension FloatingWebViewController: FullScreenPopupDelegate {
     func closeButtonTapped() {
         vcHtmlContent = ""
         vcWebURL = ""
+        stopAllMediaPlayback()
         floatingView?.removeFromSuperview()
         fullScreenPopup?.dismiss(animated: true)
     }
@@ -171,6 +173,62 @@ extension FloatingWebViewController: FullScreenPopupDelegate {
         guard let floatingView = floatingView else { return }
         fullScreenPopup?.dismiss(animated: true)
         superVC?.view.addSubview(floatingView)
+    }
+    
+    private func stopAllMediaPlayback() {
+        if let floatingWebView = floatingView?.webView {
+            floatingWebView.load(URLRequest(url: URL(string: "about:blank")!))
+            if #available(iOS 15.0, *) {
+                floatingWebView.setAllMediaPlaybackSuspended(true, completionHandler: nil)
+            } else {
+                let js = """
+                (function() {
+                    try {
+                        var videos = document.querySelectorAll('video');
+                        for (var i = 0; i < videos.length; i++) {
+                            videos[i].pause();
+                            videos[i].currentTime = 0;
+                        }
+                        var audios = document.querySelectorAll('audio');
+                        for (var j = 0; j < audios.length; j++) {
+                            audios[j].pause();
+                            audios[j].currentTime = 0;
+                        }
+                    } catch (e) {
+                        // ignore
+                    }
+                })();
+                """
+                floatingWebView.evaluateJavaScript(js, completionHandler: nil)
+            }
+        }
+        
+        if let fullScreenWebView = fullScreenPopup?.webView {
+            fullScreenWebView.load(URLRequest(url: URL(string: "about:blank")!))
+            if #available(iOS 15.0, *) {
+                fullScreenWebView.setAllMediaPlaybackSuspended(true, completionHandler: nil)
+            } else {
+                let js = """
+                (function() {
+                    try {
+                        var videos = document.querySelectorAll('video');
+                        for (var i = 0; i < videos.length; i++) {
+                            videos[i].pause();
+                            videos[i].currentTime = 0;
+                        }
+                        var audios = document.querySelectorAll('audio');
+                        for (var j = 0; j < audios.length; j++) {
+                            audios[j].pause();
+                            audios[j].currentTime = 0;
+                        }
+                    } catch (e) {
+                        // ignore
+                    }
+                })();
+                """
+                fullScreenWebView.evaluateJavaScript(js, completionHandler: nil)
+            }
+        }
     }
 }
 
@@ -331,6 +389,7 @@ class FloatingView: UIView, WKNavigationDelegate {
     }
     
     private func stopAllMediaPlayback() {
+        webView.load(URLRequest(url: URL(string: "about:blank")!))
         // iOS 15+ native API
         if #available(iOS 15.0, *) {
             webView.setAllMediaPlaybackSuspended(true, completionHandler: nil)
